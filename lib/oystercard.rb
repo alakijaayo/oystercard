@@ -27,13 +27,18 @@ class Oystercard
   end
 
   def touch_in(start_point)
-    @station << start_point.name # ['aldgate']
-    fail "Sorry, the minimum balance needed is £1" if @balance < MINIMUM_BALANCE
-    @in_journey = true
+    if @in_journey == true
+      fail "card is already in use"
+    else
+      @station << start_point.name
+      fail "Sorry, the minimum balance needed is £1" if @balance < MINIMUM_BALANCE
+      @in_journey = true
+    end
   end
 
   def touch_out
     deduct(MINIMUM_BALANCE)
+    @station = []
     @in_journey = false
   end
 end
