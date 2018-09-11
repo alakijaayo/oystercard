@@ -2,6 +2,10 @@ require './lib/oystercard'
 
 describe Oystercard do
 
+  let(:mock_station) {double :this_means_nothing_ignore_it}
+  # allow(mock_station).to receive(:name).and_return('aldgate')
+
+
   it 'shows us the balance of a new card' do
     expect(subject.balance).to eq 0
   end
@@ -27,16 +31,21 @@ describe Oystercard do
   end
 
   describe '#touch_in' do
+
+    before(:each) do
+      allow(mock_station).to receive(:name).and_return('aldgate')
+    end
+
     it 'changes in_journey status to true' do
       subject.top_up(1)
-      expect(subject.touch_in('start_point')).to eq true
+      expect(subject.touch_in(mock_station)).to eq true
     end
     it 'raises an error if balance is less than 1 when touching in' do
-      expect{ subject.touch_in('start_point') }.to raise_error "Sorry, the minimum balance needed is £1"
+      expect{ subject.touch_in(mock_station) }.to raise_error "Sorry, the minimum balance needed is £1"
     end
     it 'saves the station of entry' do
       subject.top_up(1)
-      subject.touch_in('aldgate')
+      subject.touch_in(mock_station)
       expect(subject.station).to eq ['aldgate']
     end
   end

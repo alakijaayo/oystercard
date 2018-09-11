@@ -1,3 +1,4 @@
+require './lib/station'
 
 class Oystercard
   CARD_LIMIT = 90
@@ -26,7 +27,7 @@ class Oystercard
   end
 
   def touch_in(start_point)
-    @station << start_point # ['aldgate']
+    @station << start_point.name # ['aldgate']
     fail "Sorry, the minimum balance needed is £1" if @balance < MINIMUM_BALANCE
     @in_journey = true
   end
