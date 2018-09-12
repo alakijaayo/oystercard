@@ -3,6 +3,7 @@ require './lib/oystercard'
 describe Oystercard do
 
   let(:mock_station) {double :this_means_nothing_ignore_it}
+  let(:exit_station) {double :this_means_nothing_ignore_it}
   # allow(mock_station).to receive(:name).and_return('aldgate')
 
 
@@ -60,20 +61,37 @@ describe Oystercard do
 
     before(:each) do
       allow(mock_station).to receive(:name).and_return('aldgate')
+      allow(exit_station).to receive(:name).and_return('embankment')
     end
 
     it 'deducts money from balance when touched out' do
       subject.top_up(1)
-      expect{ subject.touch_out }.to change{ subject.balance }.by -1
+      subject.touch_in(mock_station)
+      expect{ subject.touch_out(exit_station) }.to change{ subject.balance }.by -1
     end
     it 'changes in_use status to false' do
-      expect(subject.touch_out).to eq false
+      subject.top_up(1)
+      subject.touch_in(mock_station)
+      expect(subject.touch_out(exit_station)).to eq false
     end
     it 'sets station back to an empty array' do
       subject.top_up(5)
       subject.touch_in(mock_station)
-      subject.touch_out
+      subject.touch_out(exit_station)
       expect(subject.station).to eq []
+    end
+
+    it 'informs you which station you left from' do
+      subject.top_up(5)
+      subject.touch_in(mock_station)
+      expect{ subject.touch_out(exit_station) }.not_to raise_error
+    end
+
+    it 'allows to see journey history' do
+      subject.top_up(5)
+      subject.touch_in(mock_station)
+      subject.touch_out(exit_station)
+      expect(subject.history).to eq [{in: mock_station.name, out: exit_station.name}]
     end
   end
 end
