@@ -1,32 +1,29 @@
-require './lib/oystercard'
 class Journey
 
-  attr_reader :in_journey
+  attr_reader :check_in, :check_out, :paid_fare
 
-  def initialize(card = Oystercard.new)
-    @in_journey = false
-    @card = card
+  def initialize
+    @check_in = nil
+    @check_out = nil
+    @paid_fare = 0
+  end
+
+  def touch_in(station)
+    @check_in = station if @check_in == nil
+  end
+
+  def touch_out(station)
+    @check_out = station if @check_out == nil
+  end
+
+  def fare
+    return @paid_fare = 1 if (@check_in != nil) && (@check_out != nil)
+    return @paid_fare = 6 if (@check_in != nil) || (@check_out != nil)
+    return @paid_fare = 0 if (@check_in == nil) && (@check_out == nil)
   end
 
   def in_journey?
-    @in_journey
+    @check_in != nil
   end
 
-  def touch_in(start_point)
-    if @in_journey == true
-      fail "card is already in use"
-    else
-      fail "Sorry, the minimum balance needed is £1" if @card.balance < Oystercard::MINIMUM_BALANCE
-      @station << start_point.name
-      @start_point = start_point
-      @in_journey = true
-    end
-  end
-
-  def touch_out(end_point)
-    deduct(MINIMUM_BALANCE)
-    @station = []
-    @history.push({in: @start_point.name, out: end_point.name})
-    @in_journey = false
-  end
 end
